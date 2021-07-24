@@ -4,11 +4,12 @@ import { AuthenticationController } from './authentication.controller';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { readFileSync } from 'fs';
-import { ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './jwt.strategy';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt' }),
+    PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     JwtModule.register({
       secretOrPrivateKey: readFileSync(
         `${process.cwd()}/keys/private.pem`,
@@ -17,9 +18,10 @@ import { ConfigService } from '@nestjs/config';
         expiresIn: `60d`,
         algorithm: 'RS256',
       },
-    })
+    }),
+    UserModule
   ],
-  providers: [AuthenticationService],
+  providers: [AuthenticationService, JwtStrategy],
   controllers: [AuthenticationController]
 })
 export class AuthenticationModule {}

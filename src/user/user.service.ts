@@ -6,7 +6,8 @@ import { ReadUserDto } from './dto/read-user.dto';
 import { plainToClass } from 'class-transformer';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { merge } from 'lodash';
+import { JwtPayload } from '../authentication/interfaces/payload.interface';
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -57,16 +58,38 @@ export class UserService {
     }
 
     async updateUser(id: number, userDto: UpdateUserDto): Promise<ReadUserDto> {
+        
+        await this.userRepository.update(id, userDto);
+
         let user: User = await this.userRepository.findOneOrFail(id);
-
-        await this.userRepository.save(merge(user, userDto));
-
-        user = await this.userRepository.findOneOrFail(id);
-
+        
         return plainToClass(ReadUserDto, user);
     }
 
     async deleteUser(id: number): Promise<void> {
         await this.userRepository.delete(id);
+    }
+
+    async updatePasswordUser(id: number, plainTextPassword: string): Promise<ReadUserDto> {
+        
+        let hashedPassword = await hash(plainTextPassword, 12);
+
+        await this.userRepository.update(id, {
+            password: hashedPassword
+        });
+
+        let user: User = await this.userRepository.findOneOrFail(id);
+        
+        let readUser = plainToClass(ReadUserDto, user);
+        
+        return readUser;
+    }
+
+    async findByPayload(payload: JwtPayload): Promise<User> {
+        let user = await this.userRepository.findOneOrFail({
+            id: payload.id
+        });
+
+        return user;
     }
 }

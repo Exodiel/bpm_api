@@ -63,9 +63,4 @@ export class User {
     async updatePassword() {
         this.password = await hash(this.password, 12);
     }
-
-    @BeforeUpdate()
-    async updatePasswordBeforeAction() {
-        this.password = await hash(this.password, 12);
-    }
 }

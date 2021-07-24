@@ -8,7 +8,7 @@ export class ReadUserDto {
     @Expose()
     readonly name: string;
 
-    @Expose()
+    @Exclude()
     readonly password: string;
 
     @Expose()

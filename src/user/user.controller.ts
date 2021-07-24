@@ -5,6 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { Response } from 'express';
 import { Query } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePassUserDto } from './dto/update-pass-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -76,6 +77,17 @@ export class UserController {
     @HttpCode(HttpStatus.OK)
     async updateUser(@Param('id') id: number, @Body() userDto: UpdateUserDto, @Res() res: Response) {
         let user = await this.userService.updateUser(id, userDto);
+
+        return res.status(HttpStatus.OK).json(user);
+    }
+
+    @ApiTags('user/update-pass/:id')
+    @ApiOperation({ description: 'Update an especific user password by id' })
+    @Put('/update-pass/:id')
+    @HttpCode(HttpStatus.OK)
+    async updatePasswordUser(@Param('id') id: number, @Body() passDto: UpdatePassUserDto, @Res() res: Response) {
+
+        let user = await this.userService.updatePasswordUser(id, passDto.password);
 
         return res.status(HttpStatus.OK).json(user);
     }
