@@ -2,27 +2,31 @@ import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class UpdateUserDto {
 
-    @IsString()
-    @IsNotEmpty()
-    name: string;
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-    @IsString()
-    @IsNotEmpty()
-    username: string;
+  @IsString()
+  @IsNotEmpty()
+  username: string;
 
-    @IsString()
-    @IsNotEmpty()
-    email: string;
+  @IsString()
+  @IsNotEmpty()
+  email: string;
 
-    @IsString()
-    @IsNotEmpty()
-    rol: string;
+  @IsString()
+  @IsNotEmpty()
+  rol: string;
 
-    @IsString()
-    @IsOptional()
-    identification: string;
+  @IsString()
+  @IsNotEmpty()
+  type: string;
 
-    @IsString()
-    @IsOptional()
-    image: string;
+  @IsString()
+  @IsOptional()
+  identification: string;
+
+  @IsString()
+  @IsOptional()
+  image: string;
 }
