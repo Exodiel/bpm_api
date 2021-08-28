@@ -12,6 +12,6 @@ import { ProductService } from './product.service';
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   controllers: [ProductController],
-  providers: [ProductService]
+  providers: [ProductService],
 })
-export class ProductModule { }
+export class ProductModule {}

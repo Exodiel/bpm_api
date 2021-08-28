@@ -6,13 +6,14 @@ import { ReadUserDto } from '../user/dto/read-user.dto';
 import { plainToClass } from 'class-transformer';
 import { LoginDto } from './dto/login.dto';
 import { LoginStatus } from './interfaces/logint-status.interface';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthenticationService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async validateUser(payload: JwtPayload): Promise<ReadUserDto> {
     const user = await this.userService.findByPayload(payload);
@@ -24,6 +25,17 @@ export class AuthenticationService {
 
   async login(loginUserDto: LoginDto): Promise<LoginStatus> {
     const user = await this.userService.login(loginUserDto);
+
+    const token = this._createToken(user);
+
+    return {
+      user,
+      ...token,
+    };
+  }
+
+  async register(registerDto: RegisterDto): Promise<LoginStatus> {
+    const user = await this.userService.register(registerDto);
 
     const token = this._createToken(user);
 

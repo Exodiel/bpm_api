@@ -1,7 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
 
 export class ReadUserDto {
-
   @Expose()
   readonly id: number;
 
@@ -19,6 +18,12 @@ export class ReadUserDto {
 
   @Expose()
   readonly type: string;
+
+  @Expose()
+  readonly identification_type: string;
+
+  @Expose()
+  readonly active: number;
 
   @Expose()
   readonly rol: string;

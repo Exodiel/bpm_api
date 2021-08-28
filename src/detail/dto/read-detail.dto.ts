@@ -1,4 +1,4 @@
-import { Expose } from "class-transformer";
+import { Expose } from 'class-transformer';
 
 export class ReadDetailDto {
   @Expose()
@@ -15,5 +15,4 @@ export class ReadDetailDto {
 
   @Expose()
   quantity: number;
-
 }

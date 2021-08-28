@@ -24,15 +24,9 @@ import { DetailModule } from './detail/detail.module';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [
-          __dirname + '/**/*.entity{.ts,.js}',
-        ],
-        subscribers: [
-          __dirname + '/**/subscriber/*{.ts,.js}',
-        ],
-        migrations: [
-          __dirname + '/../migrations/**/*{.ts,.js}'
-        ],
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        subscribers: [__dirname + '/**/subscriber/*{.ts,.js}'],
+        migrations: [__dirname + '/**/migrations/*{.ts,.js}'],
         cli: {
           migrationsDir: './migrations',
         },
@@ -41,7 +35,7 @@ import { DetailModule } from './detail/detail.module';
         logging: true,
         autoLoadEntities: true,
         keepConnectionAlive: true,
-      })
+      }),
     }),
     UserModule,
     AuthenticationModule,
@@ -54,4 +48,4 @@ import { DetailModule } from './detail/detail.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

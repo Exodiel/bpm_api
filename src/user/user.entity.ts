@@ -1,6 +1,14 @@
-import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { hash } from "bcrypt";
-import { Order } from "../order/order.entity";
+import {
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { hash } from 'bcrypt';
+import { Order } from '../order/order.entity';
 
 @Entity()
 export class User {
@@ -9,7 +17,7 @@ export class User {
 
   @Column({
     type: 'varchar',
-    length: '250',
+    length: 250,
     nullable: false,
   })
   name: string;
@@ -23,14 +31,14 @@ export class User {
 
   @Column({
     type: 'varchar',
-    length: 20,
-    nullable: false,
+    length: 120,
+    nullable: true,
   })
   username: string;
 
   @Column({
     type: 'varchar',
-    length: 60,
+    length: 120,
     unique: true,
     nullable: false,
   })
@@ -40,7 +48,7 @@ export class User {
   @Column({
     type: 'varchar',
     length: 13,
-    nullable: false,
+    nullable: true,
   })
   rol: string;
 
@@ -48,21 +56,34 @@ export class User {
     type: 'varchar',
     length: 13,
     unique: true,
-    nullable: true
+    nullable: true,
   })
   identification: string;
 
   @Column({
     type: 'varchar',
     length: 10,
-    nullable: true
+    nullable: true,
   })
   type: string;
 
   @Column({
     type: 'varchar',
+    length: 10,
+    nullable: true,
+  })
+  identification_type: string;
+
+  @Column({
+    type: 'integer',
+    default: 1,
+  })
+  active: number;
+
+  @Column({
+    type: 'varchar',
     length: 255,
-    nullable: true
+    nullable: true,
   })
   image: string;
 
@@ -77,6 +98,6 @@ export class User {
     this.password = await hash(this.password, 12);
   }
 
-  @OneToMany(() => Order, order => order.user)
+  @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
 }

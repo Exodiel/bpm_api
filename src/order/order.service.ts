@@ -11,13 +11,25 @@ import { UpdateStatusDto } from './dto/update-status.dto';
 @Injectable()
 export class OrderService {
   constructor(
-    @InjectRepository(Order) private readonly orderRepository: Repository<Order>,
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
-
-  ) { }
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
 
   async createOrder(orderDto: CreateOrderDto): Promise<ReadOrderDto> {
-    const { date, subtotal, total, tax, description, type, payment, state, address, userId } = orderDto;
+    const {
+      date,
+      subtotal,
+      total,
+      tax,
+      description,
+      type,
+      payment,
+      state,
+      address,
+      userId,
+    } = orderDto;
     const user: User = await this.userRepository.findOneOrFail(userId);
 
     const newOrder: Order = await this.orderRepository.create({
@@ -30,7 +42,7 @@ export class OrderService {
       payment,
       state,
       address,
-      user
+      user,
     });
 
     await this.orderRepository.save(newOrder);
@@ -38,16 +50,18 @@ export class OrderService {
     return plainToClass(ReadOrderDto, newOrder);
   }
 
-  async updateStatus(id: number, updateStatus: UpdateStatusDto): Promise<ReadOrderDto> {
+  async updateStatus(
+    id: number,
+    updateStatus: UpdateStatusDto,
+  ): Promise<ReadOrderDto> {
     const { state } = updateStatus;
     await this.orderRepository.update(id, {
-      state
+      state,
     });
-    let order: Order = await this.orderRepository.findOneOrFail(id, {
-      relations: ['user']
+    const order: Order = await this.orderRepository.findOneOrFail(id, {
+      relations: ['user'],
     });
 
     return plainToClass(ReadOrderDto, order);
   }
-
 }

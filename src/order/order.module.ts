@@ -5,8 +5,6 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from './order.entity';
 import { User } from '../user/user.entity';
-import { Detail } from '../detail/detail.entity';
-import { Product } from '../product/product.entity';
 
 @Module({
   imports: [
@@ -14,6 +12,6 @@ import { Product } from '../product/product.entity';
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   providers: [OrderService],
-  controllers: [OrderController]
+  controllers: [OrderController],
 })
-export class OrderModule { }
+export class OrderModule {}

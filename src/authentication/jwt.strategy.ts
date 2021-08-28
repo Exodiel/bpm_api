@@ -11,9 +11,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthenticationService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: readFileSync(
-        `${process.cwd()}/keys/public.pem`,
-      ).toString(),
+      secretOrKey: readFileSync(`${process.cwd()}/keys/public.pem`).toString(),
       algorithms: ['RS256'],
       ignoreExpiration: false,
     });

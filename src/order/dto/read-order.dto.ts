@@ -1,8 +1,7 @@
-import { Expose } from "class-transformer";
-import { ReadUserDto } from "../../user/dto/read-user.dto";
+import { Expose } from 'class-transformer';
+import { ReadUserDto } from '../../user/dto/read-user.dto';
 
 export class ReadOrderDto {
-
   @Expose()
   id: number;
 

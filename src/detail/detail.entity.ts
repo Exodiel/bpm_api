@@ -1,10 +1,9 @@
-import { Order } from "../order/order.entity";
-import { Product } from "../product/product.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Order } from '../order/order.entity';
+import { Product } from '../product/product.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Detail {
-
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -38,9 +37,9 @@ export class Detail {
   })
   quantity: number;
 
-  @ManyToOne(() => Order, order => order.details)
+  @ManyToOne(() => Order, (order) => order.details)
   order: Order;
 
-  @ManyToOne(() => Product, product => product.details)
+  @ManyToOne(() => Product, (product) => product.details)
   product: Product;
 }

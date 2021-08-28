@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -7,9 +19,7 @@ import { ProductService } from './product.service';
 
 @Controller('product')
 export class ProductController {
-  constructor(
-    private readonly productService: ProductService
-  ) { }
+  constructor(private readonly productService: ProductService) {}
 
   @ApiTags('product/all')
   @ApiOperation({ description: 'Get all products' })
@@ -17,7 +27,7 @@ export class ProductController {
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.OK)
   async findAll(@Res() res: Response) {
-    let products = await this.productService.findAll();
+    const products = await this.productService.findAll();
 
     return res.status(HttpStatus.OK).json(products);
   }
@@ -28,7 +38,7 @@ export class ProductController {
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.OK)
   async findById(@Param('id') id: number, @Res() res: Response) {
-    let product = await this.productService.findById(id);
+    const product = await this.productService.findById(id);
 
     return res.status(HttpStatus.OK).json(product);
   }
@@ -38,8 +48,11 @@ export class ProductController {
   @Post('/create')
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.CREATED)
-  async saveProduct(@Res() res: Response, @Body() productDto: CreateProductDto) {
-    let product = await this.productService.createProduct(productDto);
+  async saveProduct(
+    @Res() res: Response,
+    @Body() productDto: CreateProductDto,
+  ) {
+    const product = await this.productService.createProduct(productDto);
 
     return res.status(HttpStatus.CREATED).json(product);
   }
@@ -49,8 +62,12 @@ export class ProductController {
   @Put('/update/:id')
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.OK)
-  async updateProduct(@Res() res: Response, @Param('id') id: number, @Body() productDto: CreateProductDto) {
-    let product = await this.productService.updateProduct(id, productDto);
+  async updateProduct(
+    @Res() res: Response,
+    @Param('id') id: number,
+    @Body() productDto: CreateProductDto,
+  ) {
+    const product = await this.productService.updateProduct(id, productDto);
 
     return res.status(HttpStatus.OK).json(product);
   }

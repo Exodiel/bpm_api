@@ -1,6 +1,12 @@
-import { Product } from "../../product/product.entity";
-import { EntitySubscriberInterface, EventSubscriber, getRepository, InsertEvent, RemoveEvent } from "typeorm";
-import { Detail } from "../detail.entity";
+import { Product } from '../../product/product.entity';
+import {
+  EntitySubscriberInterface,
+  EventSubscriber,
+  getRepository,
+  InsertEvent,
+  RemoveEvent,
+} from 'typeorm';
+import { Detail } from '../detail.entity';
 
 @EventSubscriber()
 export class DetailSubscriber implements EntitySubscriberInterface<Detail> {

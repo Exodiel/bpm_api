@@ -1,6 +1,12 @@
-import { User } from "../user/user.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Detail } from "../detail/detail.entity";
+import { User } from '../user/user.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Detail } from '../detail/detail.entity';
 
 @Entity()
 export class Order {
@@ -10,7 +16,7 @@ export class Order {
   @Column({
     type: 'varchar',
     unique: true,
-    nullable: false
+    nullable: false,
   })
   sequential: string;
 
@@ -79,9 +85,9 @@ export class Order {
   })
   address: string;
 
-  @ManyToOne(() => User, user => user.orders)
+  @ManyToOne(() => User, (user) => user.orders)
   user: User;
 
-  @OneToMany(() => Detail, detail => detail.order)
+  @OneToMany(() => Detail, (detail) => detail.order)
   details: Detail[];
 }

@@ -1,4 +1,14 @@
-import { Body, Controller, HttpCode, HttpStatus, Param, Post, Put, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -8,9 +18,7 @@ import { OrderService } from './order.service';
 
 @Controller('order')
 export class OrderController {
-  constructor(
-    private readonly orderService: OrderService
-  ) { }
+  constructor(private readonly orderService: OrderService) {}
 
   @ApiTags('order/create')
   @ApiOperation({ description: 'Create an order' })
@@ -18,7 +26,7 @@ export class OrderController {
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.CREATED)
   async saveOrder(@Body() orderDto: CreateOrderDto, @Res() res: Response) {
-    let order = await this.orderService.createOrder(orderDto);
+    const order = await this.orderService.createOrder(orderDto);
 
     return res.status(HttpStatus.CREATED).json(order);
   }
@@ -28,8 +36,12 @@ export class OrderController {
   @Put('/update-state/:id')
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.OK)
-  async updateState(@Param('id') id: number, @Body() updateStatus: UpdateStatusDto, @Res() res: Response) {
-    let order = await this.orderService.updateStatus(id, updateStatus);
+  async updateState(
+    @Param('id') id: number,
+    @Body() updateStatus: UpdateStatusDto,
+    @Res() res: Response,
+  ) {
+    const order = await this.orderService.updateStatus(id, updateStatus);
 
     return res.status(HttpStatus.OK).json(order);
   }

@@ -13,6 +13,6 @@ import { PassportModule } from '@nestjs/passport';
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   providers: [DetailService],
-  controllers: [DetailController]
+  controllers: [DetailController],
 })
-export class DetailModule { }
+export class DetailModule {}

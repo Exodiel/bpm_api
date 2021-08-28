@@ -13,17 +13,15 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot(),
     PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     JwtModule.register({
-      secret: readFileSync(
-        `${process.cwd()}/keys/private.pem`,
-      ).toString(),
+      secret: readFileSync(`${process.cwd()}/keys/private.pem`).toString(),
       signOptions: {
         expiresIn: +process.env.JWT_EXPIRATION_TIME,
-        algorithm: 'RS256'
+        algorithm: 'RS256',
       },
     }),
-    UserModule
+    UserModule,
   ],
   controllers: [AuthenticationController],
   providers: [AuthenticationService, JwtStrategy],
 })
-export class AuthenticationModule { }
+export class AuthenticationModule {}

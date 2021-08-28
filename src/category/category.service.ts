@@ -6,44 +6,52 @@ import { Category } from './category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { ReadCategoryDto } from './dto/read-category.dto';
 
-
 @Injectable()
 export class CategoryService {
+  constructor(
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
+  ) {}
 
-    constructor(
-        @InjectRepository(Category) private readonly categoryRepository: Repository<Category>
-    ) { }
+  async createCategory(
+    categoryDto: CreateCategoryDto,
+  ): Promise<ReadCategoryDto> {
+    const newCategory: Category = await this.categoryRepository.create(
+      categoryDto,
+    );
 
-    async createCategory(categoryDto: CreateCategoryDto): Promise<ReadCategoryDto> {
-        const newCategory: Category = await this.categoryRepository.create(categoryDto);
+    await this.categoryRepository.save(newCategory);
 
-        await this.categoryRepository.save(newCategory);
+    return plainToClass(ReadCategoryDto, newCategory);
+  }
 
-        return plainToClass(ReadCategoryDto, newCategory);
-    }
+  async findAll(): Promise<ReadCategoryDto[]> {
+    const categories: Category[] = await this.categoryRepository.find();
 
-    async findAll(): Promise<ReadCategoryDto[]> {
-        let categories: Category[] = await this.categoryRepository.find();
+    return categories.map((category) =>
+      plainToClass(ReadCategoryDto, category),
+    );
+  }
 
-        return categories.map(category => plainToClass(ReadCategoryDto, category));
-    }
+  async findById(id: number): Promise<ReadCategoryDto> {
+    const category: Category = await this.categoryRepository.findOneOrFail(id);
 
-    async findById(id: number): Promise<ReadCategoryDto> {
-        let category: Category = await this.categoryRepository.findOneOrFail(id);
+    return plainToClass(ReadCategoryDto, category);
+  }
 
-        return plainToClass(ReadCategoryDto, category);
-    }
+  async updateCategory(
+    id: number,
+    categoryDto: CreateCategoryDto,
+  ): Promise<ReadCategoryDto> {
+    await this.categoryRepository.update(id, categoryDto);
 
-    async updateCategory(id: number, categoryDto: CreateCategoryDto): Promise<ReadCategoryDto> {
-        await this.categoryRepository.update(id, categoryDto);
+    const category: Category = await this.categoryRepository.findOneOrFail(id);
 
-        let category: Category = await this.categoryRepository.findOneOrFail(id);
+    return plainToClass(ReadCategoryDto, category);
+  }
 
-        return plainToClass(ReadCategoryDto, category);
-    }
-
-    async deleteCategory(id: number): Promise<void> {
-        await this.categoryRepository.findOneOrFail(id);
-        await this.categoryRepository.delete(id);
-    }
+  async deleteCategory(id: number): Promise<void> {
+    await this.categoryRepository.findOneOrFail(id);
+    await this.categoryRepository.delete(id);
+  }
 }

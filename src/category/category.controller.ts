@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CategoryService } from './category.service';
@@ -7,7 +19,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) { }
+  constructor(private readonly categoryService: CategoryService) {}
 
   @ApiTags('category/all')
   @ApiOperation({ description: 'Get all categories' })
@@ -15,7 +27,7 @@ export class CategoryController {
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.OK)
   async findAll(@Res() res: Response) {
-    let categories = await this.categoryService.findAll();
+    const categories = await this.categoryService.findAll();
 
     return res.status(HttpStatus.OK).json(categories);
   }
@@ -25,8 +37,11 @@ export class CategoryController {
   @UseGuards(AuthGuard())
   @Post('/create')
   @HttpCode(HttpStatus.CREATED)
-  async saveCategory(@Body() categoryDto: CreateCategoryDto, @Res() res: Response) {
-    let category = await this.categoryService.createCategory(categoryDto);
+  async saveCategory(
+    @Body() categoryDto: CreateCategoryDto,
+    @Res() res: Response,
+  ) {
+    const category = await this.categoryService.createCategory(categoryDto);
 
     return res.status(HttpStatus.CREATED).json(category);
   }
@@ -37,7 +52,7 @@ export class CategoryController {
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.OK)
   async findById(@Param('id') id: number, @Res() res: Response) {
-    let category = await this.categoryService.findById(id);
+    const category = await this.categoryService.findById(id);
 
     return res.status(HttpStatus.OK).json(category);
   }
@@ -47,8 +62,12 @@ export class CategoryController {
   @Put('/update/:id')
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.OK)
-  async updateCategory(@Param('id') id: number, @Body() catDto: CreateCategoryDto, @Res() res: Response) {
-    let category = await this.categoryService.updateCategory(id, catDto);
+  async updateCategory(
+    @Param('id') id: number,
+    @Body() catDto: CreateCategoryDto,
+    @Res() res: Response,
+  ) {
+    const category = await this.categoryService.updateCategory(id, catDto);
 
     return res.status(HttpStatus.OK).json(category);
   }

@@ -9,13 +9,10 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { TypeORMExceptionFilter } from './filters/typeorm-exceptions.filter';
 import { ValidationPipe } from '@nestjs/common';
 
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api/v1');
-  app.useGlobalFilters(
-    new TypeORMExceptionFilter(),
-  );
+  app.useGlobalFilters(new TypeORMExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -40,7 +37,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 
-  console.log("process.env.PORT", process.env.PORT)
+  console.log('process.env.PORT', process.env.PORT);
   await app.listen(process.env.PORT);
 }
 bootstrap();

@@ -9,14 +9,18 @@ import { CreateDetailDto } from './dto/create-detail.dto';
 @Injectable()
 export class DetailService {
   constructor(
-    @InjectRepository(Order) private readonly orderRepository: Repository<Order>,
-    @InjectRepository(Detail) private readonly detailRepository: Repository<Detail>,
-    @InjectRepository(Product) private readonly productRepository: Repository<Product>,
-  ) { }
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
+    @InjectRepository(Detail)
+    private readonly detailRepository: Repository<Detail>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+  ) {}
 
   async createDetails(detailsDto: CreateDetailDto[]): Promise<void> {
     detailsDto.forEach(async (detail: CreateDetailDto) => {
-      const { productId, price, discount, subtotal, quantity, orderId } = detail;
+      const { productId, price, discount, subtotal, quantity, orderId } =
+        detail;
       const product = await this.productRepository.findOneOrFail(productId);
       const order = await this.orderRepository.findOneOrFail(orderId);
       const newDetail = await this.detailRepository.create({
@@ -25,7 +29,7 @@ export class DetailService {
         subtotal,
         quantity,
         product,
-        order
+        order,
       });
 
       await this.detailRepository.save(newDetail);

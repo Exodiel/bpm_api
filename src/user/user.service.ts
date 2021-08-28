@@ -9,16 +9,19 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { JwtPayload } from '../authentication/interfaces/payload.interface';
 import { hash, compare } from 'bcrypt';
 import { LoginDto } from '../authentication/dto/login.dto';
+import { RegisterDto } from '../authentication/dto/register.dto';
+import { CriteriaDTO } from '../shared/dto/criteria.dto';
 
 @Injectable()
 export class UserService {
-
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>
-  ) { }
+    private userRepository: Repository<User>,
+  ) {}
 
   async createUser(user: CreateUserDto): Promise<ReadUserDto> {
+    await this.existsUser(user);
+
     const newUser: User = await this.userRepository.create(user);
 
     await this.userRepository.save(newUser);
@@ -26,43 +29,67 @@ export class UserService {
     return plainToClass(ReadUserDto, newUser);
   }
 
-  async findAll(): Promise<ReadUserDto[]> {
-    let users: User[] = await this.userRepository.find();
+  private async existsUser(user: CreateUserDto) {
+    const existsUser = await this.userRepository.findOne({
+      where: [
+        { email: user.email },
+        { username: user.username },
+        { identification: user.identification },
+      ],
+    });
 
-    return users.map(user => plainToClass(ReadUserDto, user));
+    if (existsUser) {
+      throw new HttpException(
+        'El usuario ya existe, intente con diferente correo, identificacion, nombre de usuario, etc.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async findAll(criteria: CriteriaDTO): Promise<[ReadUserDto[], number]> {
+    const [usersFilter, counter] = await this.userRepository.findAndCount({
+      take: parseInt(criteria.limit),
+      skip: parseInt(criteria.offset),
+      where: {
+        type: criteria.type,
+      },
+    });
+
+    const users = usersFilter.map((user) => plainToClass(ReadUserDto, user));
+
+    return [users, counter];
   }
 
   async getUserById(id: number): Promise<ReadUserDto> {
-    let user: User = await this.userRepository.findOneOrFail(id);
+    const user: User = await this.userRepository.findOneOrFail(id);
 
     return plainToClass(ReadUserDto, user);
   }
 
   async getUserByEmail(email: string): Promise<ReadUserDto> {
-    let user: User = await this.userRepository.findOneOrFail({
+    const user: User = await this.userRepository.findOneOrFail({
       where: {
-        email
-      }
+        email,
+      },
     });
 
     return plainToClass(ReadUserDto, user);
   }
 
   async getUserByIdentification(identification: string): Promise<ReadUserDto> {
-    let user: User = await this.userRepository.findOneOrFail({
+    const user: User = await this.userRepository.findOneOrFail({
       where: {
-        identification
-      }
+        identification,
+      },
     });
 
     return plainToClass(ReadUserDto, user);
   }
 
   async updateUser(id: number, userDto: UpdateUserDto): Promise<ReadUserDto> {
-
     await this.userRepository.update(id, userDto);
 
-    let user: User = await this.userRepository.findOneOrFail(id);
+    const user: User = await this.userRepository.findOneOrFail(id);
 
     return plainToClass(ReadUserDto, user);
   }
@@ -72,24 +99,26 @@ export class UserService {
     await this.userRepository.delete(id);
   }
 
-  async updatePasswordUser(id: number, plainTextPassword: string): Promise<ReadUserDto> {
-
-    let hashedPassword = await hash(plainTextPassword, 12);
+  async updatePasswordUser(
+    id: number,
+    plainTextPassword: string,
+  ): Promise<ReadUserDto> {
+    const hashedPassword = await hash(plainTextPassword, 12);
 
     await this.userRepository.update(id, {
-      password: hashedPassword
+      password: hashedPassword,
     });
 
-    let user: User = await this.userRepository.findOneOrFail(id);
+    const user: User = await this.userRepository.findOneOrFail(id);
 
-    let readUser = plainToClass(ReadUserDto, user);
+    const readUser = plainToClass(ReadUserDto, user);
 
     return readUser;
   }
 
   async findByPayload(payload: JwtPayload): Promise<User> {
-    let user = await this.userRepository.findOneOrFail({
-      id: payload.id
+    const user = await this.userRepository.findOneOrFail({
+      id: payload.id,
     });
 
     return user;
@@ -97,7 +126,7 @@ export class UserService {
 
   async login({ email, password }: LoginDto): Promise<ReadUserDto> {
     const user = await this.userRepository.findOne({
-      email
+      email,
     });
 
     if (!user) {
@@ -113,15 +142,34 @@ export class UserService {
     return plainToClass(ReadUserDto, user);
   }
 
-  async comparePasswords(userPassword: string, currentPassword: string): Promise<boolean> {
+  async comparePasswords(
+    userPassword: string,
+    currentPassword: string,
+  ): Promise<boolean> {
     return await compare(currentPassword, userPassword);
   }
 
   async getAdminUsers(): Promise<ReadUserDto[]> {
     const users = await this.userRepository.find({
-      rol: 'admin'
+      rol: 'admin',
     });
 
-    return users.map(user => plainToClass(ReadUserDto, user));
+    return users.map((user) => plainToClass(ReadUserDto, user));
+  }
+
+  async register(registerDto: RegisterDto): Promise<ReadUserDto> {
+    const user = await this.userRepository.findOne({
+      email: registerDto.email,
+    });
+
+    if (user) {
+      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+    }
+
+    const newUser: User = await this.userRepository.create(registerDto);
+
+    await this.userRepository.save(newUser);
+
+    return plainToClass(ReadUserDto, newUser);
   }
 }

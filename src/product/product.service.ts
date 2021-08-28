@@ -9,67 +9,74 @@ import { Product } from './product.entity';
 
 @Injectable()
 export class ProductService {
-    constructor(
-        @InjectRepository(Product) private readonly productRepository: Repository<Product>,
-        @InjectRepository(Category) private readonly categoryRepository: Repository<Category>
-    ) { }
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
+  ) {}
 
-    async findAll(): Promise<ReadProductDto[]> {
-        let products: Product[] = await this.productRepository.find({
-            relations: ['category']
-        });
+  async findAll(): Promise<ReadProductDto[]> {
+    const products: Product[] = await this.productRepository.find({
+      relations: ['category'],
+    });
 
-        return products.map(product => plainToClass(ReadProductDto, product));
-    }
+    return products.map((product) => plainToClass(ReadProductDto, product));
+  }
 
-    async findById(id: number): Promise<ReadProductDto> {
-        let product: Product = await this.productRepository.findOneOrFail(id, {
-            relations: ['category']
-        });
+  async findById(id: number): Promise<ReadProductDto> {
+    const product: Product = await this.productRepository.findOneOrFail(id, {
+      relations: ['category'],
+    });
 
-        return plainToClass(ReadProductDto, product);
-    }
+    return plainToClass(ReadProductDto, product);
+  }
 
-    async createProduct(productDto: CreateProductDto): Promise<ReadProductDto> {
-        const { name, description, cost, price, stock, categoryId, image } = productDto;
-        const category = await this.categoryRepository.findOneOrFail(categoryId);
-        const newProduct: Product = await this.productRepository.create({
-            name,
-            description,
-            cost,
-            price,
-            stock,
-            image,
-            category
-        });
+  async createProduct(productDto: CreateProductDto): Promise<ReadProductDto> {
+    const { name, description, cost, price, stock, categoryId, image } =
+      productDto;
+    const category = await this.categoryRepository.findOneOrFail(categoryId);
+    const newProduct: Product = await this.productRepository.create({
+      name,
+      description,
+      cost,
+      price,
+      stock,
+      image,
+      category,
+    });
 
-        await this.productRepository.save(newProduct);
+    await this.productRepository.save(newProduct);
 
-        return plainToClass(ReadProductDto, newProduct);
-    }
+    return plainToClass(ReadProductDto, newProduct);
+  }
 
-    async updateProduct(id: number, productDto: CreateProductDto): Promise<ReadProductDto> {
-        const { name, description, cost, price, stock, categoryId, image } = productDto;
-        const category = await this.categoryRepository.findOneOrFail(categoryId);
-        await this.productRepository.update(id, {
-            name,
-            description,
-            cost,
-            price,
-            stock,
-            image,
-            category
-        });
+  async updateProduct(
+    id: number,
+    productDto: CreateProductDto,
+  ): Promise<ReadProductDto> {
+    const { name, description, cost, price, stock, categoryId, image } =
+      productDto;
+    const category = await this.categoryRepository.findOneOrFail(categoryId);
+    await this.productRepository.update(id, {
+      name,
+      description,
+      cost,
+      price,
+      stock,
+      image,
+      category,
+    });
 
-        let product: Product = await this.productRepository.findOneOrFail(id, {
-            relations: ['category']
-        });
+    const product: Product = await this.productRepository.findOneOrFail(id, {
+      relations: ['category'],
+    });
 
-        return plainToClass(ReadProductDto, product);
-    }
+    return plainToClass(ReadProductDto, product);
+  }
 
-    async deleteProduct(id: number): Promise<void> {
-        await this.productRepository.findOneOrFail(id);
-        await this.productRepository.delete(id);
-    }
+  async deleteProduct(id: number): Promise<void> {
+    await this.productRepository.findOneOrFail(id);
+    await this.productRepository.delete(id);
+  }
 }
