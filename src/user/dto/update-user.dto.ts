@@ -35,5 +35,13 @@ export class UpdateUserDto {
 
   @IsString()
   @IsOptional()
+  phone: string;
+
+  @IsString()
+  @IsOptional()
+  address: string;
+
+  @IsString()
+  @IsOptional()
   image: string;
 }

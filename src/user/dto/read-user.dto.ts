@@ -29,6 +29,12 @@ export class ReadUserDto {
   readonly rol: string;
 
   @Expose()
+  readonly phone: string;
+
+  @Expose()
+  readonly address: string;
+
+  @Expose()
   readonly identification: string;
 
   @Expose()

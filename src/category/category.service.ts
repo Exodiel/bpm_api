@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from 'class-transformer';
+import { CriteriaDTO } from '../shared/dto/criteria.dto';
 import { Repository } from 'typeorm';
 import { Category } from './category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -25,12 +26,18 @@ export class CategoryService {
     return plainToClass(ReadCategoryDto, newCategory);
   }
 
-  async findAll(): Promise<ReadCategoryDto[]> {
-    const categories: Category[] = await this.categoryRepository.find();
+  async findAll(criteria: CriteriaDTO): Promise<[ReadCategoryDto[], number]> {
+    const [categoriesFilter, counter] =
+      await this.categoryRepository.findAndCount({
+        take: parseInt(criteria.limit),
+        skip: parseInt(criteria.offset),
+      });
 
-    return categories.map((category) =>
+    const categories = categoriesFilter.map((category) =>
       plainToClass(ReadCategoryDto, category),
     );
+
+    return [categories, counter];
   }
 
   async findById(id: number): Promise<ReadCategoryDto> {

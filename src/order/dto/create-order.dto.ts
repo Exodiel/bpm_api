@@ -40,4 +40,8 @@ export class CreateOrderDto {
   @IsNumber()
   @IsNotEmpty()
   userId: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  employeeId: number;
 }

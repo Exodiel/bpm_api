@@ -37,4 +37,10 @@ export class ReadOrderDto {
 
   @Expose()
   user: ReadUserDto;
+
+  @Expose()
+  person: ReadUserDto;
+
+  @Expose()
+  employee: ReadUserDto;
 }

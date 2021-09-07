@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from 'class-transformer';
-import { Category } from 'src/category/category.entity';
+import { Category } from '../category/category.entity';
+import { CriteriaDTO } from '../shared/dto/criteria.dto';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ReadProductDto } from './dto/read-product.dto';
@@ -16,10 +17,24 @@ export class ProductService {
     private readonly categoryRepository: Repository<Category>,
   ) {}
 
-  async findAll(): Promise<ReadProductDto[]> {
-    const products: Product[] = await this.productRepository.find({
-      relations: ['category'],
-    });
+  async findAll(criteria: CriteriaDTO): Promise<[ReadProductDto[], number]> {
+    const [productsFilter, counter] = await this.productRepository.findAndCount(
+      {
+        take: parseInt(criteria.limit),
+        skip: parseInt(criteria.offset),
+        relations: ['category'],
+      },
+    );
+
+    const products = productsFilter.map((product) =>
+      plainToClass(ReadProductDto, product),
+    );
+
+    return [products, counter];
+  }
+
+  async find(): Promise<ReadProductDto[]> {
+    const products = await this.productRepository.find();
 
     return products.map((product) => plainToClass(ReadProductDto, product));
   }

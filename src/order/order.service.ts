@@ -7,6 +7,7 @@ import { User } from '../user/user.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { plainToClass } from 'class-transformer';
 import { UpdateStatusDto } from './dto/update-status.dto';
+import { CriteriaDTO } from '../shared/dto/criteria.dto';
 
 @Injectable()
 export class OrderService {
@@ -63,5 +64,19 @@ export class OrderService {
     });
 
     return plainToClass(ReadOrderDto, order);
+  }
+
+  async findAll(criteria: CriteriaDTO): Promise<[ReadOrderDto[], number]> {
+    const [ordersFilter, counter] = await this.orderRepository.findAndCount({
+      take: parseInt(criteria.limit),
+      skip: parseInt(criteria.offset),
+      relations: ['user'],
+    });
+
+    const orders = ordersFilter.map((order) =>
+      plainToClass(ReadOrderDto, order),
+    );
+
+    return [orders, counter];
   }
 }

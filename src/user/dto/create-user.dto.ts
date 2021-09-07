@@ -26,12 +26,20 @@ export class CreateUserDto {
   type: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   identification_type: string;
 
   @IsNumber()
   @IsOptional()
   active: number;
+
+  @IsString()
+  @IsOptional()
+  phone: string;
+
+  @IsString()
+  @IsOptional()
+  address: string;
 
   @IsString()
   @IsOptional()

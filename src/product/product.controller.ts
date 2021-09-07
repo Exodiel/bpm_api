@@ -8,12 +8,14 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { CriteriaDTO } from '../shared/dto/criteria.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductService } from './product.service';
 
@@ -26,10 +28,15 @@ export class ProductController {
   @Get('/all')
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.OK)
-  async findAll(@Res() res: Response) {
-    const products = await this.productService.findAll();
+  async findAll(@Query() criteria: CriteriaDTO, @Res() res: Response) {
+    const [products, counter] = await this.productService.findAll(criteria);
 
-    return res.status(HttpStatus.OK).json(products);
+    return res.status(HttpStatus.OK).json({
+      limit: criteria.limit,
+      offset: criteria.offset,
+      total: counter,
+      data: products,
+    });
   }
 
   @ApiTags('product/:id')
@@ -80,6 +87,6 @@ export class ProductController {
   async deleteProduct(@Res() res: Response, @Param('id') id: number) {
     await this.productService.deleteProduct(id);
 
-    return res.send(HttpStatus.OK);
+    return res.status(HttpStatus.OK).json({ message: 'deleted' });
   }
 }

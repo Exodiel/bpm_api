@@ -3,6 +3,9 @@ import { ReadCategoryDto } from '../../category/dto/read-category.dto';
 
 export class ReadProductDto {
   @Expose()
+  readonly id: number;
+
+  @Expose()
   readonly name: string;
 
   @Expose()

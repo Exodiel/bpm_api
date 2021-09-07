@@ -88,6 +88,12 @@ export class Order {
   @ManyToOne(() => User, (user) => user.orders)
   user: User;
 
+  @ManyToOne(() => User, (user) => user.orders)
+  person: User;
+
+  @ManyToOne(() => User, (user) => user.orders)
+  employee: User;
+
   @OneToMany(() => Detail, (detail) => detail.order)
   details: Detail[];
 }

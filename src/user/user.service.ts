@@ -22,7 +22,7 @@ export class UserService {
   async createUser(user: CreateUserDto): Promise<ReadUserDto> {
     await this.existsUser(user);
 
-    const newUser: User = await this.userRepository.create(user);
+    const newUser: User = this.userRepository.create(user);
 
     await this.userRepository.save(newUser);
 
@@ -58,6 +58,20 @@ export class UserService {
     const users = usersFilter.map((user) => plainToClass(ReadUserDto, user));
 
     return [users, counter];
+  }
+
+  async find(): Promise<ReadUserDto[]> {
+    const users = await this.userRepository.find();
+
+    return users.map((user) => plainToClass(ReadUserDto, user));
+  }
+
+  async findType(type: string): Promise<ReadUserDto[]> {
+    const users = await this.userRepository.find({
+      where: [{ type: type }],
+    });
+
+    return users.map((user) => plainToClass(ReadUserDto, user));
   }
 
   async getUserById(id: number): Promise<ReadUserDto> {

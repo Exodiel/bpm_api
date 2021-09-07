@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CategoryService } from './category.service';
 import { Response } from 'express';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { CriteriaDTO } from '../shared/dto/criteria.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -26,14 +28,19 @@ export class CategoryController {
   @Get('/all')
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.OK)
-  async findAll(@Res() res: Response) {
-    const categories = await this.categoryService.findAll();
+  async findAll(@Query() criteria: CriteriaDTO, @Res() res: Response) {
+    const [categories, counter] = await this.categoryService.findAll(criteria);
 
-    return res.status(HttpStatus.OK).json(categories);
+    return res.status(HttpStatus.OK).json({
+      limit: criteria.limit,
+      offset: criteria.offset,
+      total: counter,
+      data: categories,
+    });
   }
 
   @ApiTags('category/create')
-  @ApiOperation({ description: 'Create a categories' })
+  @ApiOperation({ description: 'Create a category' })
   @UseGuards(AuthGuard())
   @Post('/create')
   @HttpCode(HttpStatus.CREATED)
@@ -57,8 +64,8 @@ export class CategoryController {
     return res.status(HttpStatus.OK).json(category);
   }
 
-  @ApiTags('category/:id')
-  @ApiOperation({ description: 'Get a category by Id' })
+  @ApiTags('category/update/:id')
+  @ApiOperation({ description: 'Update a category by Id' })
   @Put('/update/:id')
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.OK)
@@ -73,13 +80,13 @@ export class CategoryController {
   }
 
   @ApiTags('category/:id')
-  @ApiOperation({ description: 'Get a category by Id' })
+  @ApiOperation({ description: 'Delete a category by Id' })
   @Delete('/:id')
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.OK)
   async deleteCategory(@Param('id') id: number, @Res() res: Response) {
     await this.categoryService.deleteCategory(id);
 
-    return res.send(HttpStatus.OK);
+    return res.status(HttpStatus.OK).json({ message: 'deleted' });
   }
 }

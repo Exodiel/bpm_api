@@ -52,12 +52,33 @@ export class UserController {
     });
   }
 
-  @ApiTags('user/search?id')
-  @ApiOperation({ description: 'Get an especific user by id' })
+  @ApiTags('user/find')
+  @ApiOperation({ description: 'Get all users without paginate' })
+  @Get('/find')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async getUsers(@Res() res: Response) {
+    const users = await this.userService.find();
+
+    return res.status(HttpStatus.OK).json(users);
+  }
+
+  @ApiTags('user/search?type')
+  @ApiOperation({ description: 'Get an especifics users by type' })
   @Get('/search')
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.OK)
-  async getUserById(@Res() res: Response, @Query('id') id: number) {
+  async getUsersByType(@Res() res: Response, @Query('type') type: string) {
+    const user = await this.userService.findType(type);
+    return res.status(HttpStatus.OK).json(user);
+  }
+
+  @ApiTags('user/:id')
+  @ApiOperation({ description: 'Get an especific user by id' })
+  @Get('/:id')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async getUserById(@Res() res: Response, @Param('id') id: number) {
     const user = await this.userService.getUserById(id);
     return res.status(HttpStatus.OK).json(user);
   }
@@ -95,7 +116,7 @@ export class UserController {
   async deleteUser(@Param('id') id: number, @Res() res: Response) {
     await this.userService.deleteUser(id);
 
-    return res.send(HttpStatus.OK);
+    return res.status(HttpStatus.OK).json({ message: 'deleted' });
   }
 
   @ApiTags('user/update/:id')
