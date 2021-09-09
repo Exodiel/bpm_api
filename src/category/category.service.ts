@@ -40,6 +40,14 @@ export class CategoryService {
     return [categories, counter];
   }
 
+  async find(): Promise<ReadCategoryDto[]> {
+    const categories = await this.categoryRepository.find();
+
+    return categories.map((category) =>
+      plainToClass(ReadCategoryDto, category),
+    );
+  }
+
   async findById(id: number): Promise<ReadCategoryDto> {
     const category: Category = await this.categoryRepository.findOneOrFail(id);
 

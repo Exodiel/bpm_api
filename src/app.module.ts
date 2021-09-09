@@ -10,6 +10,8 @@ import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { DetailModule } from './detail/detail.module';
+import { AppGateway } from './app.gateway';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -44,8 +46,9 @@ import { DetailModule } from './detail/detail.module';
     ProductModule,
     OrderModule,
     DetailModule,
+    NotificationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppGateway],
 })
 export class AppModule {}

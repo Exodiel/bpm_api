@@ -3,6 +3,7 @@ import {
   EntitySubscriberInterface,
   getRepository,
   RemoveEvent,
+  InsertEvent,
 } from 'typeorm';
 import { Order } from '../order.entity';
 import { Detail } from '../../detail/detail.entity';
@@ -11,6 +12,10 @@ import { Detail } from '../../detail/detail.entity';
 export class OrderSubscriber implements EntitySubscriberInterface<Order> {
   listenTo() {
     return Order;
+  }
+
+  async afterInsert(event: InsertEvent<Order>) {
+    console.log(event);
   }
 
   async beforeRemove(event: RemoveEvent<Order>) {

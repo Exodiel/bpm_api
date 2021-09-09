@@ -39,6 +39,17 @@ export class CategoryController {
     });
   }
 
+  @ApiTags('category/find')
+  @ApiOperation({ description: 'Get all categories' })
+  @Get('/find')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async find(@Res() res: Response) {
+    const categories = await this.categoryService.find();
+
+    return res.status(HttpStatus.OK).json(categories);
+  }
+
   @ApiTags('category/create')
   @ApiOperation({ description: 'Create a category' })
   @UseGuards(AuthGuard())

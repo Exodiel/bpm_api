@@ -8,6 +8,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { plainToClass } from 'class-transformer';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { CriteriaDTO } from '../shared/dto/criteria.dto';
+import { AppGateway } from '../app.gateway';
 
 @Injectable()
 export class OrderService {
@@ -16,6 +17,7 @@ export class OrderService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private gateway: AppGateway,
   ) {}
 
   async createOrder(orderDto: CreateOrderDto): Promise<ReadOrderDto> {
@@ -47,7 +49,7 @@ export class OrderService {
     });
 
     await this.orderRepository.save(newOrder);
-
+    this.gateway.wss.emit('new-order', newOrder);
     return plainToClass(ReadOrderDto, newOrder);
   }
 
@@ -62,6 +64,8 @@ export class OrderService {
     const order: Order = await this.orderRepository.findOneOrFail(id, {
       relations: ['user'],
     });
+
+    this.gateway.wss.emit('status-updated', order);
 
     return plainToClass(ReadOrderDto, order);
   }

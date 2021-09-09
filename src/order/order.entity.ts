@@ -1,10 +1,12 @@
 import { User } from '../user/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Detail } from '../detail/detail.entity';
 
@@ -85,13 +87,25 @@ export class Order {
   })
   address: string;
 
-  @ManyToOne(() => User, (user) => user.orders)
+  @CreateDateColumn()
+  created_at: string;
+
+  @UpdateDateColumn()
+  updated_at: string;
+
+  @ManyToOne(() => User, (user) => user.orders, {
+    nullable: true,
+  })
   user: User;
 
-  @ManyToOne(() => User, (user) => user.orders)
+  @ManyToOne(() => User, (user) => user.orders, {
+    nullable: true,
+  })
   person: User;
 
-  @ManyToOne(() => User, (user) => user.orders)
+  @ManyToOne(() => User, (user) => user.orders, {
+    nullable: true,
+  })
   employee: User;
 
   @OneToMany(() => Detail, (detail) => detail.order)

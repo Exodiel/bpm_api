@@ -12,6 +12,7 @@ import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { imageFileFilter, editFileName } from './utils/file-uploading';
 import { diskStorage } from 'multer';
+import { FileUpload } from './shared/interfaces/file.interface';
 
 @Controller()
 export class AppController {
@@ -22,7 +23,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Post('/upload')
+  @Post('/upload-image')
   @UseInterceptors(
     FileInterceptor('image', {
       limits: {
@@ -35,9 +36,9 @@ export class AppController {
       }),
     }),
   )
-  async uploadPhoto(@UploadedFile() file, @Res() res: Response) {
+  async uploadPhoto(@UploadedFile() file: FileUpload, @Res() res: Response) {
     return res.status(HttpStatus.CREATED).json({
-      filepath: file.path,
+      filepath: file.path.replace('\\', '/'),
     });
   }
 }

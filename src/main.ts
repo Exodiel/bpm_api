@@ -9,9 +9,11 @@ import {
   ValidationError,
   ValidationPipe,
 } from '@nestjs/common';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix('api/v1');
   app.useGlobalFilters(new TypeORMExceptionFilter());
   app.useGlobalPipes(
@@ -25,13 +27,10 @@ async function bootstrap() {
   app.enableCors();
   app.use(cookieParser());
   // app.use(helmet());
-  /*app.useStaticAssets(
-    join(__dirname, '..', 'uploads'),
-    {
-      prefix: '/uploads',
-      index: false,
-    },
-  );*/
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads',
+    index: false,
+  });
   const options = new DocumentBuilder()
     .setTitle('Delivery API')
     .setDescription('API for a Delivery BEM')
