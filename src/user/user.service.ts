@@ -74,6 +74,14 @@ export class UserService {
     return users.map((user) => plainToClass(ReadUserDto, user));
   }
 
+  async findUsersByRol(rol: string): Promise<ReadUserDto[]> {
+    const users = await this.userRepository.find({
+      where: [{ rol }],
+    });
+
+    return users.map((user) => plainToClass(ReadUserDto, user));
+  }
+
   async getUserById(id: number): Promise<ReadUserDto> {
     const user: User = await this.userRepository.findOneOrFail(id);
 

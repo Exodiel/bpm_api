@@ -1,4 +1,4 @@
-import { User } from 'src/user/user.entity';
+import { Order } from '../order/order.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -18,7 +18,7 @@ export class Notification {
     length: 120,
     nullable: false,
   })
-  topic: string;
+  topic: string; // inventoried | processing | complete | returned
 
   @Column({
     type: 'varchar',
@@ -53,8 +53,8 @@ export class Notification {
   @UpdateDateColumn()
   updated_at: string;
 
-  @ManyToOne(() => User, (user) => user.notification, {
+  @ManyToOne(() => Order, (order) => order.notification, {
     nullable: true,
   })
-  user: User;
+  order: Order;
 }

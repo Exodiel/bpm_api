@@ -1,9 +1,13 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class CreateOrderDto {
+export class UpdateOrderDto {
   @IsString()
   @IsNotEmpty()
   date: string;
+
+  @IsString()
+  @IsNotEmpty()
+  sequential: string;
 
   @IsNumber()
   @IsNotEmpty()

@@ -73,6 +73,16 @@ export class UserController {
     return res.status(HttpStatus.OK).json(user);
   }
 
+  @ApiTags('user/search?type')
+  @ApiOperation({ description: 'Get an especifics users by rol' })
+  @Get('/search')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async getUsersByRol(@Res() res: Response, @Query('rol') rol: string) {
+    const user = await this.userService.findUsersByRol(rol);
+    return res.status(HttpStatus.OK).json(user);
+  }
+
   @ApiTags('user/:id')
   @ApiOperation({ description: 'Get an especific user by id' })
   @Get('/:id')

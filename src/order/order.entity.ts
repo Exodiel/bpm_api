@@ -1,4 +1,5 @@
 import { User } from '../user/user.entity';
+import { Notification } from '../notification/notification.entity';
 import {
   Column,
   CreateDateColumn,
@@ -9,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Detail } from '../detail/detail.entity';
+import { DetailUser } from '../detail-user/detail-user.entity';
 
 @Entity()
 export class Order {
@@ -27,6 +29,14 @@ export class Order {
     nullable: false,
   })
   date: string;
+
+  @Column({
+    type: 'decimal',
+    precision: 20,
+    scale: 2,
+    nullable: false,
+  })
+  discount: number;
 
   @Column({
     type: 'decimal',
@@ -78,11 +88,11 @@ export class Order {
     length: 30,
     nullable: false,
   })
-  state: string;
+  state: string; // creado | inventariado | procesando | completado | devuelto
 
   @Column({
     type: 'varchar',
-    length: 255,
+    length: 1024,
     nullable: true,
   })
   address: string;
@@ -93,21 +103,20 @@ export class Order {
   @UpdateDateColumn()
   updated_at: string;
 
-  @ManyToOne(() => User, (user) => user.orders, {
-    nullable: true,
-  })
+  @ManyToOne(() => User, (user) => user.orders)
   user: User;
 
-  @ManyToOne(() => User, (user) => user.orders, {
-    nullable: true,
-  })
+  @ManyToOne(() => User, (user) => user.orders)
   person: User;
-
-  @ManyToOne(() => User, (user) => user.orders, {
-    nullable: true,
-  })
-  employee: User;
 
   @OneToMany(() => Detail, (detail) => detail.order)
   details: Detail[];
+
+  @OneToMany(() => DetailUser, (detailuser) => detailuser.order)
+  detailuser: DetailUser[];
+
+  @OneToMany(() => Notification, (notification) => notification.order, {
+    nullable: true,
+  })
+  notification: Notification[];
 }

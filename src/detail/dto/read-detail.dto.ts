@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { ReadProductDto } from '../../product/dto/read-product.dto';
 
 export class ReadDetailDto {
   @Expose()
@@ -11,8 +12,14 @@ export class ReadDetailDto {
   discount: number;
 
   @Expose()
+  discountvalue: number;
+
+  @Expose()
   subtotal: number;
 
   @Expose()
   quantity: number;
+
+  @Expose()
+  product: ReadProductDto;
 }

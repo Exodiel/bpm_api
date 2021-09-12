@@ -23,5 +23,5 @@ export class CreateNotificationDTO {
 
   @IsNumber()
   @IsOptional()
-  userId: number;
+  orderId: number;
 }

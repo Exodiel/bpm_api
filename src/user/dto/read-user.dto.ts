@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Expose } from 'class-transformer';
 
 export class ReadUserDto {
   @Expose()
@@ -6,9 +6,6 @@ export class ReadUserDto {
 
   @Expose()
   readonly name: string;
-
-  @Exclude()
-  readonly password: string;
 
   @Expose()
   readonly username: string;

@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Res,
   UseGuards,
@@ -23,11 +25,22 @@ export class DetailController {
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.CREATED)
   async saveDetails(
-    @Body() detailsDto: CreateDetailDto[],
+    @Body('data') detailsDto: CreateDetailDto[],
     @Res() res: Response,
   ) {
     await this.detailService.createDetails(detailsDto);
 
-    return res.send(HttpStatus.CREATED);
+    return res.status(HttpStatus.CREATED).json({ message: 'details created' });
+  }
+
+  @ApiTags('detail/order/:id')
+  @ApiOperation({ description: 'Get details By OrderId' })
+  @Get('/order/:id')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.CREATED)
+  async findDetailsByOrder(@Param('id') orderId: number, @Res() res: Response) {
+    const details = await this.detailService.getDetailsByOrder(orderId);
+
+    return res.status(HttpStatus.CREATED).json(details);
   }
 }

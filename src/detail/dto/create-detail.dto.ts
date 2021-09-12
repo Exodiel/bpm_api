@@ -11,6 +11,10 @@ export class CreateDetailDto {
 
   @IsNumber()
   @IsNotEmpty()
+  discountvalue: number;
+
+  @IsNumber()
+  @IsNotEmpty()
   subtotal: number;
 
   @IsNumber()

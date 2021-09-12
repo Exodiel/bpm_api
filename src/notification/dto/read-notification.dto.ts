@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { ReadOrderDto } from '../../order/dto/read-order.dto';
 
 export class ReadNotificationDTO {
   @Expose()
@@ -23,5 +24,5 @@ export class ReadNotificationDTO {
   readonly updated_at: string;
 
   @Expose()
-  readonly userId: number;
+  readonly order: ReadOrderDto;
 }

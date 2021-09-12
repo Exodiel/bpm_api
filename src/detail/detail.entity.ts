@@ -29,6 +29,14 @@ export class Detail {
     scale: 2,
     nullable: false,
   })
+  discountvalue: number;
+
+  @Column({
+    type: 'decimal',
+    precision: 20,
+    scale: 2,
+    nullable: false,
+  })
   subtotal: number;
 
   @Column({

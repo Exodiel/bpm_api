@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { hash } from 'bcrypt';
 import { Order } from '../order/order.entity';
-import { Notification } from '../notification/notification.entity';
+import { DetailUser } from '../detail-user/detail-user.entity';
 
 @Entity()
 export class User {
@@ -116,8 +116,6 @@ export class User {
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
 
-  @OneToMany(() => Notification, (notification) => notification.user, {
-    nullable: true,
-  })
-  notification: Notification[];
+  @OneToMany(() => DetailUser, (detailuser) => detailuser.order)
+  detailuser: DetailUser[];
 }

@@ -39,6 +39,16 @@ export class ProductController {
     });
   }
 
+  @ApiTags('product/find')
+  @ApiOperation({ description: 'Get all products' })
+  @Get('/find')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async find(@Res() res: Response) {
+    const products = await this.productService.find();
+    return res.status(HttpStatus.OK).json(products);
+  }
+
   @ApiTags('product/:id')
   @ApiOperation({ description: 'Get an especific product by id' })
   @Get('/:id')

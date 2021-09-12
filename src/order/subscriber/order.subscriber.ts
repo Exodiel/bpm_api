@@ -1,12 +1,10 @@
 import {
   EventSubscriber,
   EntitySubscriberInterface,
-  getRepository,
   RemoveEvent,
-  InsertEvent,
+  UpdateEvent,
 } from 'typeorm';
 import { Order } from '../order.entity';
-import { Detail } from '../../detail/detail.entity';
 
 @EventSubscriber()
 export class OrderSubscriber implements EntitySubscriberInterface<Order> {
@@ -14,18 +12,11 @@ export class OrderSubscriber implements EntitySubscriberInterface<Order> {
     return Order;
   }
 
-  async afterInsert(event: InsertEvent<Order>) {
-    console.log(event);
+  async beforeUpdate(event: UpdateEvent<Order>) {
+    console.log('event', event.entity);
   }
 
   async beforeRemove(event: RemoveEvent<Order>) {
-    const { id } = event.entity;
-    const details = await getRepository(Detail)
-      .createQueryBuilder('detail')
-      .leftJoinAndSelect('detail.order', 'order')
-      .leftJoinAndSelect('detail.product', 'product')
-      .where('detail.orderId = :id', { id })
-      .getMany();
-    await getRepository(Detail).remove(details);
+    console.log('event', event.entity);
   }
 }

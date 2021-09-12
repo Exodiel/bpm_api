@@ -2,16 +2,18 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { AppGateway } from './app.gateway';
+import { CoreModule } from './core/core.module';
 import { UserModule } from './user/user.module';
 import { AuthenticationModule } from './authentication/authentication.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { CoreModule } from './core/core.module';
 import { CategoryModule } from './category/category.module';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { DetailModule } from './detail/detail.module';
-import { AppGateway } from './app.gateway';
 import { NotificationModule } from './notification/notification.module';
+import { DetailUserModule } from './detail-user/detail-user.module';
 
 @Module({
   imports: [
@@ -39,6 +41,7 @@ import { NotificationModule } from './notification/notification.module';
         keepConnectionAlive: true,
       }),
     }),
+    EventEmitterModule.forRoot(),
     UserModule,
     AuthenticationModule,
     CoreModule,
@@ -47,6 +50,7 @@ import { NotificationModule } from './notification/notification.module';
     OrderModule,
     DetailModule,
     NotificationModule,
+    DetailUserModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppGateway],

@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { ReadDetailDto } from '../../detail/dto/read-detail.dto';
 import { ReadUserDto } from '../../user/dto/read-user.dto';
 
 export class ReadOrderDto {
@@ -10,6 +11,9 @@ export class ReadOrderDto {
 
   @Expose()
   date: string;
+
+  @Expose()
+  discount: number;
 
   @Expose()
   subtotal: number;
@@ -42,5 +46,5 @@ export class ReadOrderDto {
   person: ReadUserDto;
 
   @Expose()
-  employee: ReadUserDto;
+  details: ReadDetailDto[];
 }
