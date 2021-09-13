@@ -13,6 +13,7 @@ export class OrderCreatedEvent {
   personId: number;
   sequential: string;
   discount: number;
+  origin: string;
 
   constructor(
     id: number,
@@ -29,6 +30,7 @@ export class OrderCreatedEvent {
     personId: number,
     sequential: string,
     discount: number,
+    origin: string,
   ) {
     this.id = id;
     this.date = date;
@@ -44,5 +46,6 @@ export class OrderCreatedEvent {
     this.personId = personId;
     this.sequential = sequential;
     this.discount = discount;
+    this.origin = origin;
   }
 }

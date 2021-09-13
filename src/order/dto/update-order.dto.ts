@@ -45,6 +45,10 @@ export class UpdateOrderDto {
   @IsNotEmpty()
   address: string;
 
+  @IsString()
+  @IsNotEmpty()
+  origin: string;
+
   @IsNumber()
   @IsNotEmpty()
   userId: number;

@@ -26,7 +26,7 @@ export class OrderService {
     private readonly detailRepository: Repository<Detail>,
     private gateway: AppGateway,
     private eventEmitter: EventEmitter2,
-  ) {}
+  ) { }
 
   async createOrder(orderDto: CreateOrderDto): Promise<ReadOrderDto> {
     const {
@@ -42,6 +42,7 @@ export class OrderService {
       userId,
       personId,
       discount,
+      origin,
     } = orderDto;
     const sequential = await this.generateSequential(type);
     const user: User = await this.userRepository.findOneOrFail(userId);
@@ -61,6 +62,7 @@ export class OrderService {
       person,
       sequential,
       discount,
+      origin,
     });
 
     await this.orderRepository.save(newOrder);
@@ -80,6 +82,7 @@ export class OrderService {
       personId,
       sequential,
       discount,
+      origin,
     );
     this.eventEmitter.emit('order.created', orderCreatedEvent);
     return plainToClass(ReadOrderDto, newOrder);
@@ -99,9 +102,8 @@ export class OrderService {
     if (orders.length <= 0) {
       sequential = '001-001-000000001';
     } else {
-      const serie = `${
-        parseInt(orders[0].sequential.split('-')[2]) + 1
-      }`.padStart(9, '0');
+      const serie = `${parseInt(orders[0].sequential.split('-')[2]) + 1
+        }`.padStart(9, '0');
       sequential = `001-001-${serie}`;
     }
 
@@ -189,6 +191,7 @@ export class OrderService {
       order.sequential,
       order.discount,
       employeeId,
+      order.origin,
     );
 
     this.gateway.wss.emit('status-updated', order);

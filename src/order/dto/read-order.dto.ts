@@ -40,6 +40,9 @@ export class ReadOrderDto {
   address: string;
 
   @Expose()
+  origin: string;
+
+  @Expose()
   user: ReadUserDto;
 
   @Expose()

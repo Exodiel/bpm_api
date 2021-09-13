@@ -41,6 +41,10 @@ export class CreateOrderDto {
   @IsNotEmpty()
   address: string;
 
+  @IsString()
+  @IsNotEmpty()
+  origin: string;
+
   @IsNumber()
   @IsNotEmpty()
   userId: number;

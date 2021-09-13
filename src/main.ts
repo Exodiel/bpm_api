@@ -24,7 +24,11 @@ async function bootstrap() {
         new BadRequestException('Validation error'),
     }),
   );
-  app.enableCors();
+  app.enableCors({
+    origin: ['http://localhost:4200'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization, Accept',
+  });
   app.use(cookieParser());
   // app.use(helmet());
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {

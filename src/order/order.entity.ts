@@ -97,6 +97,13 @@ export class Order {
   })
   address: string;
 
+  @Column({
+    type: 'varchar',
+    length: 20,
+    nullable: true,
+  })
+  origin: string;
+
   @CreateDateColumn()
   created_at: string;
 
