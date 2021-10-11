@@ -17,7 +17,7 @@ export class DetailService {
     private readonly detailRepository: Repository<Detail>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
-  ) {}
+  ) { }
 
   async createDetails(detailsDto: CreateDetailDto[]): Promise<void> {
     detailsDto.forEach(async (detail: CreateDetailDto) => {
@@ -61,7 +61,7 @@ export class DetailService {
       relations: ['product'],
       where: [{ order }],
     });
-    if (state === 'completado') {
+    if (state === 'procesando') {
       details.forEach(async (detail) => {
         const newStock = detail.product.stock - detail.quantity;
         await this.productRepository.update(detail.product.id, {

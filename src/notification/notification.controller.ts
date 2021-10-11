@@ -17,7 +17,7 @@ import { NotificationService } from './notification.service';
 
 @Controller('notification')
 export class NotificationController {
-  constructor(private notificationService: NotificationService) {}
+  constructor(private notificationService: NotificationService) { }
 
   @ApiTags('notification/all')
   @ApiOperation({ description: 'Get all notifications' })
@@ -45,5 +45,16 @@ export class NotificationController {
   async deleteNotification(@Param('id') id: number, @Res() res: Response) {
     await this.notificationService.deleteNotification(id);
     return res.status(HttpStatus.OK).json({ message: 'notification deleted' });
+  }
+
+  @ApiTags('notification/find')
+  @ApiOperation({ description: 'Get all notifications' })
+  @Get('/find')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async find(@Res() res: Response) {
+    const notifications = await this.notificationService.find();
+
+    return res.status(HttpStatus.OK).json(notifications);
   }
 }

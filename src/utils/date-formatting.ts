@@ -7,3 +7,15 @@ export const getDateWithTime = () => {
 
   return actualDate;
 };
+
+export const getActualYear = () => {
+  const actualYear = moment().tz('America/Guayaquil').format('YYYY');
+
+  return actualYear;
+};
+
+export const getActualMonth = () => {
+  const actualMonth = moment().tz('America/Guayaquil').format('MM');
+
+  return actualMonth;
+};

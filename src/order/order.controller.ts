@@ -17,6 +17,7 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CriteriaDTO } from '../shared/dto/criteria.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { CriteriaReportDto } from './dto/criteria-report.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { OrderService } from './order.service';
@@ -39,6 +40,17 @@ export class OrderController {
       total: counter,
       data: orders,
     });
+  }
+
+  @ApiTags('order/find')
+  @ApiOperation({ description: 'Get all orders without paging' })
+  @Get('/find')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async find(@Res() res: Response) {
+    const orders = await this.orderService.find();
+
+    return res.status(HttpStatus.OK).json(orders);
   }
 
   @ApiTags('order/create')
@@ -102,5 +114,84 @@ export class OrderController {
     const order = await this.orderService.updateOrder(id, updateOrderDto);
 
     return res.status(HttpStatus.OK).json(order);
+  }
+
+  @ApiTags('order/find-totals-by-month')
+  @ApiOperation({ description: 'Get totals grouping by month' })
+  @Get('/find-totals-by-month/:type/:state')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async findTotal(
+    @Param('type') type: string,
+    @Param('state') state: string,
+    @Res() res: Response,
+  ) {
+    const data = await this.orderService.findTotalByMonth(type, state);
+
+    return res.status(HttpStatus.OK).json({
+      data,
+    });
+  }
+
+  @ApiTags('order/get-counters')
+  @ApiOperation({ description: 'Get counters by state' })
+  @Get('/get-counters/:type')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async getCounters(@Param('type') type: string, @Res() res: Response) {
+    const data = await this.orderService.getCountersByState();
+
+    return res.status(HttpStatus.OK).json({
+      data,
+    });
+  }
+
+  @ApiTags('order/get-total-month/:type/:state')
+  @ApiOperation({ description: 'Get total month by type and state' })
+  @Get('/get-total-month/:type/:state')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async getTotalMonth(
+    @Param('type') type: string,
+    @Param('state') state: string,
+    @Res() res: Response,
+  ) {
+    const data = await this.orderService.getTotalMonth(type, state);
+
+    return res.status(HttpStatus.OK).json({
+      data,
+    });
+  }
+
+  @ApiTags('order/get-total-month/:type/:state')
+  @ApiOperation({ description: 'Get total month by type and state' })
+  @Get('/get-totals-year/:type/:state')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async getTotalsYear(
+    @Param('type') type: string,
+    @Param('state') state: string,
+    @Res() res: Response,
+  ) {
+    const data = await this.orderService.getTotalsByYear(type, state);
+
+    return res.status(HttpStatus.OK).json({
+      data,
+    });
+  }
+
+  @ApiTags(
+    'order/get-transactions?startDate=2021-09-01&endDate=2021-09-30&personId=1&type=Venta&state=completado',
+  )
+  @ApiOperation({ description: 'Get total month by type and state' })
+  @Post('/get-transactions')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async getTransactionReport(
+    @Body() criteria: CriteriaReportDto,
+    @Res() res: Response,
+  ) {
+    const data = await this.orderService.getTransactionReport(criteria);
+    return res.status(HttpStatus.OK).json(data);
   }
 }

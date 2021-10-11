@@ -39,4 +39,4 @@ import { Product } from '../product/product.entity';
   ],
   controllers: [OrderController],
 })
-export class OrderModule {}
+export class OrderModule { }

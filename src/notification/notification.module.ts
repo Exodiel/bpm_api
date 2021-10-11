@@ -4,8 +4,8 @@ import { NotificationController } from './notification.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Notification } from './notification.entity';
 import { Order } from '../order/order.entity';
-import { AppGateway } from '../app.gateway';
 import { PassportModule } from '@nestjs/passport';
+import { AppGateway } from '../app.gateway';
 
 @Module({
   imports: [
@@ -16,4 +16,4 @@ import { PassportModule } from '@nestjs/passport';
   controllers: [NotificationController],
   exports: [NotificationService],
 })
-export class NotificationModule {}
+export class NotificationModule { }

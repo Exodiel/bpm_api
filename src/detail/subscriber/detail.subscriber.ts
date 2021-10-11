@@ -30,7 +30,10 @@ export class DetailSubscriber implements EntitySubscriberInterface<Detail> {
   async beforeRemove(event: RemoveEvent<Detail>) {
     const { product, quantity, order } = event.entity;
     let updatedStock = product.stock;
-    if (order.state === 'creado' && order.type === 'Venta') {
+    if (
+      (order.state === 'creado' || order.state === 'inventariado') &&
+      order.type === 'Venta'
+    ) {
       updatedStock = product.stock + quantity;
     }
 

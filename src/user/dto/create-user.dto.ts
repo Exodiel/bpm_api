@@ -48,4 +48,8 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   image: string;
+
+  @IsString()
+  @IsOptional()
+  state: string;
 }

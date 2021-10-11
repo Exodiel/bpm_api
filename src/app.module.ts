@@ -55,4 +55,4 @@ import { DetailUserModule } from './detail-user/detail-user.module';
   controllers: [AppController],
   providers: [AppService, AppGateway],
 })
-export class AppModule {}
+export class AppModule { }

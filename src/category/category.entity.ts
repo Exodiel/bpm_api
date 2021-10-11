@@ -20,6 +20,12 @@ export class Category {
   })
   name: string;
 
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  image: string;
+
   @CreateDateColumn()
   created_at: string;
 

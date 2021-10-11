@@ -36,4 +36,7 @@ export class ReadUserDto {
 
   @Expose()
   readonly image: string;
+
+  @Expose()
+  readonly state: string;
 }

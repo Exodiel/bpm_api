@@ -102,6 +102,13 @@ export class User {
   })
   image: string;
 
+  @Column({
+    type: 'varchar',
+    length: 20,
+    nullable: true,
+  })
+  state: string;
+
   @CreateDateColumn()
   created_at: string;
 

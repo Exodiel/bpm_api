@@ -17,6 +17,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CriteriaDTO } from '../shared/dto/criteria.dto';
 import { CreateProductDto } from './dto/create-product.dto';
+import { CriteriaReportDto } from './dto/criteria-report.dto';
 import { ProductService } from './product.service';
 
 @Controller('product')
@@ -98,5 +99,39 @@ export class ProductController {
     await this.productService.deleteProduct(id);
 
     return res.status(HttpStatus.OK).json({ message: 'deleted' });
+  }
+
+  @ApiTags('product/get-report-product')
+  @ApiOperation({ description: 'Delete a product by id' })
+  @Post('/get-report-product')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async reportProduct(
+    @Body() criteria: CriteriaReportDto,
+    @Res() res: Response,
+  ) {
+    let report = null;
+    if (criteria.type == 'most-selling') {
+      report = await this.productService.getProductReportSellingFormat(
+        criteria,
+      );
+    } else {
+      report = await this.productService.getProductReportProfitFormat(criteria);
+    }
+
+    return res.status(HttpStatus.OK).json(report);
+  }
+
+  @ApiTags('product/get-products-by-category')
+  @ApiOperation({ description: 'Get products by categoryId' })
+  @Get('/get-products-by-category/:id')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async getProductsByCategoryId(@Res() res: Response, @Param('id') id: number) {
+    const products = await this.productService.getProductsByCategory(id);
+
+    return res.status(HttpStatus.OK).json({
+      data: products,
+    });
   }
 }

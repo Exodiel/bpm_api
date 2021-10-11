@@ -6,4 +6,7 @@ export class ReadCategoryDto {
 
   @Expose()
   readonly name: string;
+
+  @Expose()
+  readonly image: string;
 }

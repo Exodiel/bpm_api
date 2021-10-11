@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Between } from 'typeorm';
 import { ReadOrderDto } from './dto/read-order.dto';
 import { Order } from './order.entity';
 import { User } from '../user/user.entity';
@@ -14,6 +14,10 @@ import { OrderCreatedEvent } from './event/order-created.event';
 import { OrderUpdatedEvent } from './event/order-updated.event';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Detail } from '../detail/detail.entity';
+import { ReadReportDto } from './dto/read-report.dto';
+import { ReadCountersDTO } from './dto/read-counters.dto';
+import { getActualYear, getActualMonth } from '../utils/date-formatting';
+import { CriteriaReportDto } from './dto/criteria-report.dto';
 
 @Injectable()
 export class OrderService {
@@ -24,9 +28,9 @@ export class OrderService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Detail)
     private readonly detailRepository: Repository<Detail>,
-    private gateway: AppGateway,
     private eventEmitter: EventEmitter2,
-  ) { }
+    private gateway: AppGateway,
+  ) {}
 
   async createOrder(orderDto: CreateOrderDto): Promise<ReadOrderDto> {
     const {
@@ -102,8 +106,9 @@ export class OrderService {
     if (orders.length <= 0) {
       sequential = '001-001-000000001';
     } else {
-      const serie = `${parseInt(orders[0].sequential.split('-')[2]) + 1
-        }`.padStart(9, '0');
+      const serie = `${
+        parseInt(orders[0].sequential.split('-')[2]) + 1
+      }`.padStart(9, '0');
       sequential = `001-001-${serie}`;
     }
 
@@ -235,5 +240,210 @@ export class OrderService {
     });
     await this.detailRepository.remove(details);
     await this.orderRepository.remove(order);
+  }
+
+  async findTotalByMonth(
+    type: string,
+    state: string,
+  ): Promise<ReadReportDto[]> {
+    const raw = await this.orderRepository
+      .createQueryBuilder('order')
+      .select('ROUND(SUM(order.total), 2)', 'total')
+      .addSelect('EXTRACT(MONTH FROM order.date)', 'month')
+      .addSelect('COUNT(order.date)', 'count')
+      .where('order.type = :type', { type })
+      .andWhere('order.state <> :state', { state })
+      .groupBy('EXTRACT(MONTH FROM order.date)')
+      .orderBy('EXTRACT(MONTH FROM order.date)', 'DESC')
+      .limit(4)
+      .getRawMany<ReadReportDto>();
+
+    return raw.map((el) => plainToClass(ReadReportDto, el));
+  }
+
+  async getTotalsByYear(
+    type: string,
+    state: string,
+  ): Promise<{
+    actualYear: ReadReportDto[];
+    pastYear: ReadReportDto[];
+  }> {
+    const year = getActualYear();
+
+    const actualYear = await this.orderRepository
+      .createQueryBuilder('order')
+      .select('ROUND(SUM(order.total), 2)', 'total')
+      .addSelect('EXTRACT(MONTH FROM order.date)', 'month')
+      .addSelect('COUNT(order.date)', 'count')
+      .where('order.type = :type', { type })
+      .andWhere('order.state <> :state', { state })
+      .andWhere('EXTRACT(YEAR FROM order.date) = :year', { year })
+      .groupBy('EXTRACT(MONTH FROM order.date)')
+      .orderBy('EXTRACT(MONTH FROM order.date)', 'ASC')
+      .limit(12)
+      .getRawMany<ReadReportDto>();
+
+    const pastYear = await this.orderRepository
+      .createQueryBuilder('order')
+      .select('ROUND(SUM(order.total), 2)', 'total')
+      .addSelect('EXTRACT(MONTH FROM order.date)', 'month')
+      .addSelect('COUNT(order.date)', 'count')
+      .where('order.type = :type', { type })
+      .andWhere('order.state <> :state', { state })
+      .andWhere('EXTRACT(YEAR FROM order.date) = :year', {
+        year: parseInt(year) - 1,
+      })
+      .groupBy('EXTRACT(MONTH FROM order.date)')
+      .orderBy('EXTRACT(MONTH FROM order.date)', 'ASC')
+      .limit(12)
+      .getRawMany<ReadReportDto>();
+
+    return {
+      actualYear,
+      pastYear,
+    };
+  }
+
+  async getTotalMonth(
+    type: string,
+    state: string,
+  ): Promise<{
+    actualMonth: { total: string };
+    pastMonth: { total: string };
+  }> {
+    const month = getActualMonth().padStart(2, '0');
+
+    const actualMonth = await this.orderRepository
+      .createQueryBuilder('order')
+      .select('ROUND(SUM(order.total), 2)', 'total')
+      .where('order.type = :type', { type })
+      .andWhere('order.state <> :state', { state })
+      .andWhere('EXTRACT(MONTH FROM order.date) = :month', { month })
+      .getRawOne<{ total: string }>();
+
+    const pastMonth = await this.orderRepository
+      .createQueryBuilder('order')
+      .select('ROUND(SUM(order.total), 2)', 'total')
+      .where('order.type = :type', { type })
+      .andWhere('order.state <> :state', { state })
+      .andWhere('EXTRACT(MONTH FROM order.date) = :month', {
+        month: parseInt(month) - 1,
+      })
+      .getRawOne<{ total: string }>();
+
+    return {
+      actualMonth,
+      pastMonth,
+    };
+  }
+
+  async getCountersByState(): Promise<ReadCountersDTO> {
+    const raw = await this.orderRepository.query(
+      'SELECT COUNT(state) AS complete, (SELECT COUNT(state) FROM "order" WHERE state = $1) AS inventoried, (SELECT COUNT(state) FROM "order" WHERE state = $2) AS processing, (SELECT COUNT(state) FROM "order" WHERE state = $3) AS returning FROM "order" WHERE state = $4',
+      ['inventariado', 'procesando', 'devuelto', 'completado'],
+    );
+
+    const counters = raw[0] as ReadCountersDTO;
+
+    return counters;
+  }
+
+  async getTransactionReport(
+    criteria: CriteriaReportDto,
+  ): Promise<ReadOrderDto[]> {
+    let orders: Order[];
+    if (
+      criteria.personId == 0 &&
+      criteria.state === '' &&
+      criteria.type === ''
+    ) {
+      orders = await this.orderRepository.find({
+        relations: ['user', 'person'],
+        where: {
+          date: Between(criteria.startDate, criteria.endDate),
+        },
+      });
+    } else if (
+      criteria.personId > 0 &&
+      criteria.state === '' &&
+      criteria.type === ''
+    ) {
+      const person = await this.userRepository.findOneOrFail(criteria.personId);
+      orders = await this.orderRepository.find({
+        relations: ['user', 'person'],
+        where: {
+          date: Between(criteria.startDate, criteria.endDate),
+          person,
+        },
+      });
+    } else if (
+      criteria.personId > 0 &&
+      criteria.state !== '' &&
+      criteria.type === ''
+    ) {
+      const person = await this.userRepository.findOneOrFail(criteria.personId);
+      orders = await this.orderRepository.find({
+        relations: ['user', 'person'],
+        where: {
+          date: Between(criteria.startDate, criteria.endDate),
+          person,
+          state: criteria.state,
+        },
+      });
+    } else if (
+      criteria.personId > 0 &&
+      criteria.state !== '' &&
+      criteria.type !== ''
+    ) {
+      const person = await this.userRepository.findOneOrFail(criteria.personId);
+      orders = await this.orderRepository.find({
+        relations: ['user', 'person'],
+        where: {
+          date: Between(criteria.startDate, criteria.endDate),
+          person,
+          state: criteria.state,
+          type: criteria.type,
+        },
+      });
+    } else if (
+      criteria.personId <= 0 &&
+      criteria.state !== '' &&
+      criteria.type !== ''
+    ) {
+      orders = await this.orderRepository.find({
+        relations: ['user', 'person'],
+        where: {
+          date: Between(criteria.startDate, criteria.endDate),
+          state: criteria.state,
+          type: criteria.type,
+        },
+      });
+    } else if (
+      criteria.personId <= 0 &&
+      criteria.state === '' &&
+      criteria.type !== ''
+    ) {
+      orders = await this.orderRepository.find({
+        relations: ['user', 'person'],
+        where: {
+          date: Between(criteria.startDate, criteria.endDate),
+          type: criteria.type,
+        },
+      });
+    } else if (
+      criteria.personId <= 0 &&
+      criteria.state !== '' &&
+      criteria.type === ''
+    ) {
+      orders = await this.orderRepository.find({
+        relations: ['user', 'person'],
+        where: {
+          date: Between(criteria.startDate, criteria.endDate),
+          state: criteria.state,
+        },
+      });
+    }
+
+    return orders.map((order) => plainToClass(ReadOrderDto, order));
   }
 }

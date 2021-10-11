@@ -30,7 +30,7 @@ export class UpdateUserDto {
   active: number;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   identification: string;
 
   @IsString()
@@ -44,4 +44,8 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   image: string;
+
+  @IsString()
+  @IsOptional()
+  state: string;
 }

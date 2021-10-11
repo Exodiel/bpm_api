@@ -6,8 +6,8 @@ import { CreateNotificationDTO } from './dto/create-notification.dto';
 import { ReadNotificationDTO } from './dto/read-notification.dto';
 import { Notification } from './notification.entity';
 import { plainToClass } from 'class-transformer';
-import { AppGateway } from '../app.gateway';
 import { CriteriaDTO } from '../shared/dto/criteria.dto';
+import { AppGateway } from '../app.gateway';
 
 @Injectable()
 export class NotificationService {
@@ -17,7 +17,7 @@ export class NotificationService {
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
     private gateway: AppGateway,
-  ) {}
+  ) { }
 
   async createNotification(
     notificationDTO: CreateNotificationDTO,
@@ -57,6 +57,18 @@ export class NotificationService {
     );
 
     return [notifications, counter];
+  }
+
+  async find(): Promise<ReadNotificationDTO[]> {
+    const notifications = await this.notificationRepository.find({
+      order: {
+        id: 'DESC',
+      },
+    });
+
+    return notifications.map((notification) =>
+      plainToClass(ReadNotificationDTO, notification),
+    );
   }
 
   getValuesByState(state: string): {
