@@ -59,6 +59,7 @@ export class OrderController {
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.CREATED)
   async saveOrder(@Body() orderDto: CreateOrderDto, @Res() res: Response) {
+    console.log(orderDto);
     const order = await this.orderService.createOrder(orderDto);
 
     return res.status(HttpStatus.CREATED).json(order);
@@ -192,6 +193,32 @@ export class OrderController {
     @Res() res: Response,
   ) {
     const data = await this.orderService.getTransactionReport(criteria);
+    return res.status(HttpStatus.OK).json(data);
+  }
+
+  @ApiTags('order/get-transactions-by-user/:id')
+  @ApiOperation({ description: 'Get transactions by user' })
+  @Get('/get-transactions-by-user/:id')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async getTransactionByUser(
+    @Param('id') userId: number,
+    @Res() res: Response,
+  ) {
+    const data = await this.orderService.getTransactionsByUser(userId);
+    return res.status(HttpStatus.OK).json(data);
+  }
+
+  @ApiTags('order/get-transactions-by-person/:id')
+  @ApiOperation({ description: 'Get transactions by person' })
+  @Get('/get-transactions-by-person/:id')
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.OK)
+  async getTransactionByPerson(
+    @Param('id') personId: number,
+    @Res() res: Response,
+  ) {
+    const data = await this.orderService.getTransactionsByPerson(personId);
     return res.status(HttpStatus.OK).json(data);
   }
 }

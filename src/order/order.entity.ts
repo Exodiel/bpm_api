@@ -35,6 +35,7 @@ export class Order {
     precision: 20,
     scale: 2,
     nullable: false,
+    default: 0.0,
   })
   discount: number;
 

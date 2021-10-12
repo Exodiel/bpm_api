@@ -28,6 +28,7 @@ export class DetailController {
     @Body('data') detailsDto: CreateDetailDto[],
     @Res() res: Response,
   ) {
+    console.log(detailsDto);
     await this.detailService.createDetails(detailsDto);
 
     return res.status(HttpStatus.CREATED).json({ message: 'details created' });

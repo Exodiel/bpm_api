@@ -446,4 +446,22 @@ export class OrderService {
 
     return orders.map((order) => plainToClass(ReadOrderDto, order));
   }
+
+  async getTransactionsByUser(userId: number): Promise<ReadOrderDto[]> {
+    const user = await this.userRepository.findOneOrFail(userId);
+    const orders = await this.orderRepository.find({
+      where: [{ user }],
+    });
+
+    return orders.map((order) => plainToClass(ReadOrderDto, order));
+  }
+
+  async getTransactionsByPerson(personId: number): Promise<ReadOrderDto[]> {
+    const person = await this.userRepository.findOneOrFail(personId);
+    const orders = await this.orderRepository.find({
+      where: [{ person }],
+    });
+
+    return orders.map((order) => plainToClass(ReadOrderDto, order));
+  }
 }
